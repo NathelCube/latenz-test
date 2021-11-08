@@ -1,5 +1,6 @@
 radio.onReceivedNumber(function (receivedNumber) {
     if (receivedNumber == 40) {
+        let Zeit = 0
         basic.showLeds(`
             . . . # .
             . # . # .
@@ -11,25 +12,33 @@ radio.onReceivedNumber(function (receivedNumber) {
         serial.writeValue("Zeitdifferenz", Zeit2 - Zeit)
     }
 })
-input.onButtonPressed(Button.A, function () {
-    Zeit = control.millis()
-    basic.showLeds(`
-        . . . . .
-        . # # # .
-        . # . # .
-        . . # # .
-        . . . . .
-        `)
-    radio.sendNumber(30)
-})
 serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
-    basic.showIcon(IconNames.Heart)
+    EmpfangeneDaten = serial.readLine()
+    serial.writeLine(EmpfangeneDaten)
+    if ("FWD" == EmpfangeneDaten) {
+        basic.showLeds(`
+            . . # . .
+            . . . # .
+            # # # # #
+            . . . # .
+            . . # . .
+            `)
+    }
+    if ("RWD" == EmpfangeneDaten) {
+        basic.showLeds(`
+            . . # . .
+            . # . . .
+            # # # # #
+            . # . . .
+            . . # . .
+            `)
+    }
 })
-let Zeit = 0
+let EmpfangeneDaten = ""
 let Zeit2 = 0
 serial.redirect(
+SerialPin.P14,
 SerialPin.P0,
-SerialPin.P1,
 BaudRate.BaudRate115200
 )
 radio.setGroup(1)
